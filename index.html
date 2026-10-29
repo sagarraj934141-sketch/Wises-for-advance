@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100b10">
+<title>My Princess — A Story Written in Stars</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Italiana&display=swap');
+
+:root{
+  --ink:#100b10;
+  --wine:#451724;
+  --wine-light:#702c42;
+  --gold:#d6b77c;
+  --gold-pale:#f1dfb4;
+  --cream:#f7eee4;
+  --muted:#b9a7ad;
+  --line:rgba(225,192,139,.22);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --display:'Italiana',Georgia,serif;
+  --sans:'DM Sans',Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{
+  margin:0;background:var(--ink);color:var(--cream);
+  font-family:var(--sans);font-weight:300;overflow-x:hidden;
+}
+body.locked{overflow:hidden}
+::selection{background:var(--gold);color:var(--ink)}
+button,input{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{
+  outline:2px solid var(--gold);outline-offset:5px
+}
+button:disabled{opacity:.45;cursor:not-allowed}
+.grain{
+  position:fixed;inset:0;z-index:20;pointer-events:none;opacity:.065;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")
+}
+.ambient{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
+  background:
+  radial-gradient(ellipse at 5% 10%,rgba(94,34,54,.23),transparent 42%),
+  radial-gradient(ellipse at 92% 72%,rgba(115,68,41,.13),transparent 38%),
+  #100b10;
+}
+.ambient:after{
+  content:"";position:absolute;inset:0;opacity:.22;
+  background:repeating-linear-gradient(115deg,transparent 0 90px,rgba(255,255,255,.018) 91px,transparent 92px 180px)
+}
+#progress{position:fixed;top:0;left:0;width:0;height:2px;background:var(--gold);z-index:100;box-shadow:0 0 12px #d6b77c}
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 5.5%;border-bottom:1px solid transparent;
+  transition:.35s;background:linear-gradient(to bottom,rgba(16,11,16,.88),transparent)
+}
+.topbar.scrolled{background:rgba(16,11,16,.92);backdrop-filter:blur(18px);border-color:var(--line);padding-top:15px;padding-bottom:15px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand-mark{width:31px;height:31px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-family:var(--serif);font-size:20px}
+.brand-name{font-family:var(--serif);font-size:22px;letter-spacing:1.3px}
+.nav-right{display:flex;align-items:center;gap:24px}
+.nav-note{font-size:9px;letter-spacing:2.6px;text-transform:uppercase;color:var(--muted)}
+.sound-toggle{
+  border:1px solid var(--line);background:transparent;color:var(--cream);
+  width:40px;height:40px;border-radius:50%;font-size:16px;transition:.25s
+}
+.sound-toggle:hover{border-color:var(--gold);color:var(--gold)}
+.container{width:min(1080px,88%);margin-inline:auto}
+.eyebrow{
+  color:var(--gold);font-size:10px;letter-spacing:4px;
+  text-transform:uppercase;display:flex;align-items:center;gap:12px
+}
+.eyebrow:before{content:"";display:block;width:28px;height:1px;background:var(--gold)}
+.display{font-family:var(--display);font-weight:400;letter-spacing:-1.5px}
+.serif{font-family:var(--serif)}
+.muted{color:var(--muted)}
+.gold{color:var(--gold)}
+.section{padding:125px 0;position:relative}
+.section-head{max-width:650px;margin-bottom:52px}
+.section-head h2{font-size:clamp(46px,7vw,83px);line-height:.94;margin:23px 0}
+.section-head p{color:var(--muted);font-size:14px;line-height:1.95;max-width:490px}
+.rule{height:1px;background:linear-gradient(90deg,var(--gold),transparent);opacity:.45}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:15px;
+  padding:15px 23px;border:1px solid var(--gold);background:var(--gold);
+  color:#1b1113;text-transform:uppercase;letter-spacing:2px;font-size:9px;
+  font-weight:700;transition:transform .25s,background .25s,color .25s;
+}
+.btn:hover{transform:translateY(-3px);background:var(--gold-pale)}
+.btn.ghost{background:transparent;color:var(--cream);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn.small{padding:12px 17px}
+.arrow{font-size:16px;line-height:0}
+a.btn{text-decoration:none}
+
+/* OPENING */
+.hero{
+  min-height:100svh;display:grid;align-items:center;position:relative;
+  overflow:hidden;padding:145px 0 90px;
+}
+.hero-art{
+  position:absolute;right:-4%;top:13%;width:min(58vw,740px);height:78%;
+  opacity:.8;pointer-events:none;
+}
+.hero-art svg{width:100%;height:100%}
+.hero-content{position:relative;z-index:2;max-width:720px}
+.hero .eyebrow{margin-bottom:27px}
+.hero h1{
+  font-size:clamp(76px,13.5vw,166px);line-height:.76;
+  margin:0 0 32px;letter-spacing:-5px;
+}
+.hero h1 span{display:block}
+.hero h1 .second{color:var(--gold);font-style:italic;margin-left:8vw}
+.hero-copy{font-family:var(--serif);font-size:clamp(20px,2.4vw,29px);line-height:1.5;color:#d5c3c5;max-width:455px;margin:30px 0}
+.hero-meta{display:flex;align-items:center;gap:24px;margin-top:43px}
+.hero-meta .date{font-size:10px;letter-spacing:2px;color:var(--muted);line-height:1.9}
+.hero-meta .date strong{display:block;color:var(--gold);font-weight:400}
+.hero-bottom{
+  position:absolute;bottom:28px;left:5.5%;right:5.5%;
+  display:flex;justify-content:space-between;align-items:center;
+  color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase
+}
+.scroll-mark{display:flex;gap:12px;align-items:center}
+.scroll-line{height:32px;width:1px;background:var(--gold);animation:scrollline 1.8s infinite}
+@keyframes scrollline{0%,100%{transform:scaleY(.45);transform-origin:top}50%{transform:scaleY(1)}}
+.orbit{transform-origin:400px 350px;animation:orbit 55s linear infinite}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.float{animation:float 6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+
+/* STORY */
+.story-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(38px,8vw,110px);align-items:center}
+.story-art{position:relative;min-height:500px;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#341722,#170f16 58%,#251720)}
+.story-art:before,.story-art:after{content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(214,183,124,.22);border-radius:50%}
+.story-art:after{width:330px;height:330px}
+.story-art svg{width:85%;max-width:390px;position:relative;z-index:1}
+.art-caption{position:absolute;bottom:24px;left:25px;right:25px;display:flex;justify-content:space-between;align-items:end;z-index:2}
+.art-caption small{color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase}
+.story-copy h3{font-size:clamp(37px,5vw,59px);line-height:1.02;margin:23px 0}
+.story-copy p{font-size:14px;line-height:2;color:#c5b4b8;max-width:480px}
+.pullquote{font-family:var(--serif);font-size:28px;line-height:1.3;color:var(--gold-pale);padding-left:20px;border-left:1px solid var(--gold);margin:30px 0}
+.signature{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:28px;margin-top:27px}
+
+/* CHAPTERS */
+.chapters{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.chapter-row{
+  display:grid;grid-template-columns:72px 1fr auto;align-items:center;gap:25px;
+  padding:27px 0;border-bottom:1px solid var(--line);transition:.3s
+}
+.chapter-row:last-child{border-bottom:0}
+.chapter-row:hover{padding-left:12px}
+.chapter-num{font-family:var(--serif);font-size:26px;color:var(--gold)}
+.chapter-row h3{font-family:var(--serif);font-size:28px;font-weight:400;margin:0 0 4px}
+.chapter-row p{margin:0;font-size:12px;color:var(--muted);line-height:1.7}
+.chapter-mark{width:42px;height:42px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--gold)}
+
+/* MEMORY WALL */
+.memory-wall{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.memory{
+  min-height:255px;position:relative;overflow:hidden;padding:28px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  border:1px solid var(--line);background:linear-gradient(145deg,rgba(91,37,55,.55),rgba(26,16,23,.9));
+}
+.memory:nth-child(2){margin-top:48px;background:linear-gradient(145deg,rgba(112,72,43,.26),rgba(26,16,23,.9))}
+.memory:nth-child(3){background:linear-gradient(145deg,rgba(52,45,64,.65),rgba(26,16,23,.9))}
+.memory:nth-child(4){margin-top:48px;background:linear-gradient(145deg,rgba(98,37,52,.4),rgba(26,16,23,.9))}
+.memory-symbol{font-family:var(--serif);font-size:57px;color:rgba(214,183,124,.6);line-height:1}
+.memory h3{font-family:var(--serif);font-size:27px;font-weight:400;margin:0 0 8px}
+.memory p{color:var(--muted);font-size:12px;line-height:1.8;margin:0;max-width:290px}
+.memory-number{position:absolute;right:20px;top:20px;color:rgba(214,183,124,.65);font-size:9px;letter-spacing:2px}
+.photo-tools{margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.upload-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--gold);padding:10px 0;cursor:pointer}
+.upload-label input{display:none}
+.photo-note{font-size:11px;color:var(--muted);line-height:1.7}
+
+/* SECRET */
+.secret-section{background:linear-gradient(180deg,transparent,rgba(61,23,37,.25),transparent)}
+.secret-layout{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start}
+.secret-intro{position:sticky;top:120px}
+.secret-intro .big-lock{font-size:74px;color:var(--gold);font-family:var(--serif);margin:30px 0 10px}
+.secret-intro p{font-size:13px;line-height:2;color:var(--muted);max-width:380px}
+.level-list{border-top:1px solid var(--line)}
+.level{
+  padding:23px 0;border-bottom:1px solid var(--line);display:grid;
+  grid-template-columns:45px 1fr auto;gap:15px;align-items:center;
+}
+.level-num{font-family:var(--serif);font-size:25px;color:var(--gold)}
+.level h3{font-family:var(--serif);font-size:23px;font-weight:400;margin:0 0 5px}
+.level p{font-size:11px;color:var(--muted);line-height:1.7;margin:0}
+.level-status{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+.level.locked-level .level-status{color:#8a7880}
+.level-body{grid-column:1/-1;padding:16px 0 4px 60px}
+.level-body p{font-size:13px;line-height:1.9;color:#d2c0c4}
+.riddle-input{
+  width:100%;background:#170f15;border:1px solid var(--line);color:var(--cream);
+  padding:15px;margin:10px 0 13px;outline:none
+}
+.riddle-input:focus{border-color:var(--gold)}
+.feedback{min-height:20px;color:var(--gold);font-size:11px;line-height:1.7;margin-top:12px}
+.level-reveal{display:none;padding:13px 16px;border-left:1px solid var(--gold);background:rgba(214,183,124,.05);font-family:var(--serif);font-size:20px;line-height:1.6;color:var(--gold-pale);margin:13px 0}
+.level-reveal.show{display:block;animation:fadeUp .7s ease both}
+
+/* GIFTS */
+.gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.gift{
+  position:relative;text-align:left;border:1px solid var(--line);padding:25px 21px 24px;
+  min-height:250px;background:linear-gradient(155deg,rgba(92,40,57,.42),rgba(22,15,21,.88));
+  color:var(--cream);transition:transform .35s,border-color .35s;overflow:hidden
+}
+.gift:before{content:"";position:absolute;inset:auto -25% -70% -25%;height:140%;border-radius:50%;background:rgba(214,183,124,.04);transition:.4s}
+.gift:hover{transform:translateY(-6px);border-color:var(--gold)}
+.gift:hover:before{background:rgba(214,183,124,.1)}
+.gift-icon{font-size:34px;display:block;margin-bottom:32px;filter:grayscale(.3)}
+.gift small{font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
+.gift h3{font-family:var(--serif);font-weight:400;font-size:26px;margin:9px 0}
+.gift p{font-size:11px;color:var(--muted);line-height:1.7;margin:0}
+.gift.opened{border-color:var(--gold);background:linear-gradient(145deg,#4c2430,#21131c)}
+.gift-result{margin-top:22px;padding:25px;border:1px solid var(--line);display:none;animation:fadeUp .7s ease both}
+.gift-result.show{display:block}
+.gift-result h3{font-family:var(--serif);font-size:32px;font-weight:400;color:var(--gold);margin:0 0 12px}
+.gift-result p{color:#d3c2c5;line-height:1.9;font-size:13px;white-space:pre-line}
+
+/* LETTER */
+.letter-wrap{max-width:770px;margin:0 auto;position:relative;padding:clamp(28px,6vw,72px);border:1px solid var(--line);background:linear-gradient(140deg,rgba(64,27,41,.42),rgba(22,14,20,.75))}
+.letter-wrap:before{content:"“";position:absolute;top:0;left:25px;color:rgba(214,183,124,.23);font-family:var(--serif);font-size:130px;line-height:1}
+.letter-wrap h3{font-family:var(--serif);font-size:clamp(34px,5vw,54px);font-weight:400;margin:0 0 25px}
+.letter-wrap p{font-size:14px;line-height:2.15;color:#d4c2c7;margin:0 0 20px}
+.letter-sign{font-family:var(--serif);font-size:30px;font-style:italic;color:var(--gold);margin-top:30px}
+.edit-note{font-size:10px;color:#8f7d85;margin-top:25px;line-height:1.8}
+
+/* COUNTDOWN */
+.countdown-section{padding:80px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.countdown{text-align:center}
+.countdown h2{font-size:clamp(43px,7vw,74px);margin:18px 0 10px}
+.countdown-sub{font-size:12px;letter-spacing:1px;color:var(--muted)}
+.clock{display:flex;justify-content:center;gap:clamp(15px,4vw,45px);margin:40px 0 25px}
+.clock-unit{min-width:65px}
+.clock-unit strong{display:block;font-family:var(--serif);font-size:clamp(40px,7vw,65px);font-weight:300;color:var(--gold-pale);line-height:1.1}
+.clock-unit span{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.countdown-foot{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:20px}
+
+/* FINALE */
+.finale{position:relative;min-height:95svh;display:grid;place-items:center;text-align:center;overflow:hidden;padding:100px 5%}
+.finale:before,.finale:after{content:"";position:absolute;width:min(90vw,780px);aspect-ratio:1;border:1px solid rgba(214,183,124,.12);border-radius:50%;pointer-events:none}
+.finale:after{width:min(70vw,580px);border-color:rgba(214,183,124,.18)}
+.finale-inner{position:relative;z-index:2;max-width:730px}
+.finale-overline{color:var(--gold);letter-spacing:5px;font-size:10px;text-transform:uppercase}
+.finale h2{font-size:clamp(68px,12vw,135px);line-height:.85;margin:35px 0 25px}
+.finale h2 em{display:block;color:var(--gold);font-weight:400}
+.finale p{max-width:440px;margin:0 auto 28px;font-family:var(--serif);font-size:23px;line-height:1.5;color:#d5c1c6}
+.finale-date{font-size:10px;letter-spacing:4px;color:var(--muted);margin:30px 0}
+.finale.hidden-finale{filter:blur(4px);opacity:.35;pointer-events:none}
+#finaleLock{text-align:center;padding:0 0 65px}
+.footer{padding:32px 5.5%;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:#8e7b83;font-size:9px;letter-spacing:1.5px;text-transform:uppercase}
+.footer span:last-child{color:var(--gold)}
+.toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,30px);opacity:0;z-index:120;pointer-events:none;padding:13px 20px;border:1px solid var(--gold);background:#1b1119;color:var(--gold-pale);font-size:12px;transition:.3s;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.reveal{opacity:0;transform:translateY(25px);transition:opacity .9s ease,transform .9s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.particle{position:fixed;pointer-events:none;z-index:80;animation:particleUp 2.8s ease-out forwards}
+@keyframes particleUp{from{transform:translateY(0) scale(.6);opacity:1}to{transform:translateY(-190px) rotate(35deg) scale(1.4);opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+
+/* CINEMATIC OPENING */
+.cinema-gate{
+  position:fixed;inset:0;z-index:200;background:#100b10;display:grid;place-items:center;
+  padding:25px;transition:opacity 1s ease,visibility 1s ease
+}
+.cinema-gate.dismissed{opacity:0;visibility:hidden;pointer-events:none}
+.gate-frame{position:absolute;inset:18px;border:1px solid rgba(214,183,124,.25);pointer-events:none}
+.gate-inner{text-align:center;max-width:620px;position:relative}
+.gate-symbol{width:75px;height:75px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;margin:0 auto 35px;color:var(--gold);font-family:var(--serif);font-size:36px;animation:slowGlow 4s ease-in-out infinite}
+@keyframes slowGlow{50%{box-shadow:0 0 45px rgba(214,183,124,.18)}}
+.gate-label{font-size:9px;letter-spacing:5px;color:var(--gold);text-transform:uppercase}
+.gate-inner h2{font-family:var(--display);font-size:clamp(53px,9vw,95px);font-weight:400;line-height:.95;margin:25px 0}
+.gate-inner p{font-family:var(--serif);font-size:21px;color:var(--muted);line-height:1.6;margin:0 auto 32px;max-width:420px}
+.gate-bottom{position:absolute;bottom:34px;font-size:9px;letter-spacing:3px;color:#7d6a72;text-transform:uppercase}
+@media(min-width:900px){.hero-content{padding-left:2vw}}
+@media(max-width:760px){
+  .topbar{padding:17px 6%}.nav-note{display:none}
+  .hero{padding-top:140px;min-height:94svh}
+  .hero-art{right:-30%;top:17%;width:100vw;height:70%;opacity:.38}
+  .hero h1{font-size:clamp(75px,17vw,120px);letter-spacing:-3px}
+  .hero h1 .second{margin-left:5vw}
+  .hero-copy{max-width:330px}
+  .hero-meta{align-items:flex-start;flex-wrap:wrap}
+  .section{padding:85px 0}
+  .story-grid,.secret-layout{grid-template-columns:1fr;gap:38px}
+  .story-art{min-height:360px;order:2}
+  .secret-intro{position:static}
+  .memory-wall{gap:10px}
+  .memory{min-height:220px;padding:20px}
+  .memory:nth-child(2),.memory:nth-child(4){margin-top:25px}
+  .memory h3{font-size:23px}
+  .memory p{font-size:11px}
+  .gift-grid{grid-template-columns:1fr}
+  .gift{min-height:190px}
+  .gift-icon{margin-bottom:18px}
+  .chapter-row{grid-template-columns:42px 1fr auto;gap:12px}
+  .chapter-row h3{font-size:24px}
+  .chapter-row p{font-size:11px}
+  .level-body{padding-left:0}
+  .footer{flex-direction:column}
+}
+@media(max-width:420px){
+  .brand-name{font-size:19px}
+  .brand-mark{width:27px;height:27px}
+  .hero-bottom{font-size:8px}
+  .hero-meta .date{font-size:9px}
+  .memory-wall{grid-template-columns:1fr}
+  .memory,.memory:nth-child(2),.memory:nth-child(4){margin-top:0;min-height:190px}
+  .clock{gap:10px}
+  .clock-unit{min-width:55px}
+  .level{grid-template-columns:32px 1fr}
+  .level-status{grid-column:2}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+
+<body class="locked">
+<div class="ambient"></div>
+<div class="grain"></div>
+<div id="progress"></div>
+
+<!-- CINEMATIC INTRO -->
+<div class="cinema-gate" id="gate">
+  <div class="gate-frame"></div>
+  <div class="gate-inner">
+    <div class="gate-symbol">M</div>
+    <div class="gate-label">A private screening · made with love</div>
+    <h2>Some stories<br>deserve <i class="gold">forever.</i></h2>
+    <p>Tonight, the stars have a little secret. And this one is only for you.</p>
+    <button class="btn" id="beginBtn">Enter our story <span class="arrow">↗</span></button>
+  </div>
+  <div class="gate-bottom">Chapter 01 · A story written for My Princess</div>
+</div>
+
+<header class="topbar" id="topbar">
+  <a class="brand" href="#home" aria-label="My Princess home">
+    <span class="brand-mark">M</span><span class="brand-name">My Princess</span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-note">A story written for you</span>
+    <button class="sound-toggle" id="soundBtn" aria-label="Toggle ambient sound" title="Toggle ambient sound">♫</button>
+  </div>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 800 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="roseGold" x1="180" y1="100" x2="600" y2="600" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#f0d8a2"/><stop offset=".45" stop-color="#a76a55"/><stop offset="1" stop-color="#552237"/>
+        </linearGradient>
+        <radialGradient id="roseCore"><stop stop-color="#e2b77c" stop-opacity=".65"/><stop offset="1" stop-color="#6a263d" stop-opacity=".02"/></radialGradient>
+      </defs>
+      <g class="orbit" opacity=".45">
+        <ellipse cx="400" cy="350" rx="310" ry="135" transform="rotate(-33 400 350)" stroke="#d6b77c" stroke-opacity=".45"/>
+        <ellipse cx="400" cy="350" rx="240" ry="310" transform="rotate(31 400 350)" stroke="#d6b77c" stroke-opacity=".3"/>
+        <circle cx="400" cy="350" r="280" stroke="#d6b77c" stroke-opacity=".17"/>
+      </g>
+      <g class="float">
+        <path d="M400 570 C370 520 260 465 285 385 C307 320 372 343 400 392 C428 343 493 320 515 385 C540 465 430 520 400 570Z" fill="url(#roseCore)" stroke="url(#roseGold)" stroke-width="1.5"/>
+        <path d="M400 392 C352 350 333 303 369 282 C397 265 413 296 400 320 C432 271 473 293 464 327 C456 359 425 374 400 392Z" stroke="url(#roseGold)" stroke-width="1.5"/>
+        <path d="M400 392 C375 365 365 338 384 324 C396 315 405 331 400 345 C417 324 435 339 428 355 C422 369 410 381 400 392Z" fill="url(#roseCore)" stroke="url(#roseGold)" stroke-width="1"/>
+        <path d="M400 570 C401 515 402 466 400 392" stroke="url(#roseGold)" stroke-width="1.5"/>
+        <path d="M401 477 C355 427 323 448 333 471 C345 496 380 490 401 477Z" stroke="#a87c64" stroke-width="1.2"/>
+        <path d="M401 514 C443 465 474 486 461 506 C449 526 421 526 401 514Z" stroke="#a87c64" stroke-width="1.2"/>
+        <circle cx="400" cy="392" r="110" stroke="#d6b77c" stroke-opacity=".14"/>
+      </g>
+      <g fill="#e5c78d">
+        <circle cx="172" cy="190" r="2"/><circle cx="650" cy="160" r="2.5"/><circle cx="613" cy="475" r="2"/>
+        <circle cx="244" cy="540" r="1.8"/><circle cx="540" cy="275" r="1.5"/><circle cx="300" cy="165" r="1.4"/>
+      </g>
+    </svg>
+  </div>
+  <div class="container hero-content">
+    <div class="eyebrow">The most beautiful chapter</div>
+    <h1 class="display"><span>My</span><span class="second">Princess.</span></h1>
+    <p class="hero-copy">If I could turn every feeling into a constellation, the whole universe would spell your name.</p>
+    <a class="btn" href="#story">Discover your story <span class="arrow">↓</span></a>
+    <div class="hero-meta">
+      <div class="date">A DATE TO REMEMBER<strong>10 NOVEMBER 2026</strong></div>
+      <div class="rule" style="width:48px"></div>
+      <div class="date">MADE OF LITTLE THINGS<strong>AND A LOT OF LOVE</strong></div>
+    </div>
+  </div>
+  <div class="hero-bottom"><span>Volume I · You & Me</span><span class="scroll-mark"><span class="scroll-line"></span> Scroll to feel the story</span></div>
+</section>
+
+<!-- THE STORY -->
+<section class="section" id="story">
+  <div class="container story-grid">
+    <div class="story-art reveal">
+      <svg viewBox="0 0 360 430" fill="none" aria-label="Illustration of a rose beneath the moon">
+        <defs>
+          <linearGradient id="petal" x1="70" y1="90" x2="260" y2="330" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#d6b77c"/><stop offset=".45" stop-color="#9a4e55"/><stop offset="1" stop-color="#3d1728"/>
+          </linearGradient>
+        </defs>
+        <circle cx="180" cy="170" r="115" stroke="#d6b77c" stroke-opacity=".25"/>
+        <circle cx="180" cy="170" r="94" stroke="#d6b77c" stroke-opacity=".13"/>
+        <path d="M180 320 C151 279 86 253 105 203 C121 164 159 181 180 210 C201 181 239 164 255 203 C274 253 209 279 180 320Z" fill="#5a2438" stroke="url(#petal)" stroke-width="1.4"/>
+        <path d="M180 211 C143 181 139 148 162 136 C181 126 194 145 180 162 C204 135 225 153 212 173 C204 187 190 200 180 211Z" fill="#733448" stroke="url(#petal)" stroke-width="1.4"/>
+        <path d="M180 211 C162 189 166 172 179 170 C191 168 194 181 185 189 C205 174 213 192 199 202Z" fill="#b57b69" fill-opacity=".65" stroke="#d6b77c" stroke-opacity=".65"/>
+        <path d="M180 320V210" stroke="#d6b77c" stroke-opacity=".7"/>
+        <path d="M180 282C147 248 121 261 133 279C145 295 165 291 180 282Z" fill="#283a2e" stroke="#b79a65" stroke-opacity=".6"/>
+        <path d="M180 301C213 267 238 285 227 301C216 316 194 312 180 301Z" fill="#283a2e" stroke="#b79a65" stroke-opacity=".6"/>
+        <path d="M96 355H264" stroke="#d6b77c" stroke-opacity=".5"/>
+        <text x="180" y="386" text-anchor="middle" fill="#d6b77c" font-family="Georgia" font-size="12" letter-spacing="4">FOREVER, IN BLOOM</text>
+      </svg>
+      <div class="art-caption"><small>One of one</small><small>Est. in my heart ∞</small></div>
+    </div>
+    <div class="story-copy reveal">
+      <div class="eyebrow">Chapter 01 · The beginning</div>
+      <h3 class="display">Somehow, the world became <i class="gold">softer.</i></h3>
+      <p>Maybe love isn't always a grand scene from a movie. Maybe it's a familiar voice, a little smile, an ordinary day that becomes your favourite memory without warning.</p>
+      <p>And somewhere between all the little moments, one person starts feeling less like someone you know and more like a place where your heart can rest.</p>
+      <div class="pullquote">“You make the ordinary feel like something worth remembering.”</div>
+      <p>This little world is for you. Every page, every secret, every surprise is my way of saying that you deserve to feel special — not just today, but in all the little tomorrows too.</p>
+      <div class="signature">With all my heart, always.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAPTER DIRECTORY -->
+<section class="section" style="padding-top:20px">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">The film reel</div>
+      <h2 class="display">Four little chapters.<br><i class="gold">One big feeling.</i></h2>
+      <p>Take your time. The best stories are never meant to be rushed.</p>
+    </div>
+    <div class="chapters reveal">
+      <a class="chapter-row" href="#memories" style="text-decoration:none">
+        <span class="chapter-num">01</span><span><h3>The little things</h3><p>Four reasons you make life feel different.</p></span><span class="chapter-mark">↘</span>
+      </a>
+      <a class="chapter-row" href="#secrets" style="text-decoration:none">
+        <span class="chapter-num">02</span><span><h3>The secret rooms</h3><p>Three levels. Three little secrets. One heart.</p></span><span class="chapter-mark">⌑</span>
+      </a>
+      <a class="chapter-row" href="#gifts" style="text-decoration:none">
+        <span class="chapter-num">03</span><span><h3>Something for you</h3><p>Open each gift when your heart says so.</p></span><span class="chapter-mark">✧</span>
+      </a>
+      <a class="chapter-row" href="#letter" style="text-decoration:none">
+        <span class="chapter-num">04</span><span><h3>A letter, just for you</h3><p>Some words deserve a quieter place.</p></span><span class="chapter-mark">♡</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MEMORIES -->
+<section class="section" id="memories">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Chapter 02 · The little things</div>
+      <h2 class="display">A thousand reasons.<br><i class="gold">A few words.</i></h2>
+      <p>Not every beautiful memory needs a photograph. Some are kept in the heart. Add your own photos here to make this story even more personal.</p>
+    </div>
+    <div class="memory-wall reveal">
+      <article class="memory" id="memory1">
+        <span class="memory-number">MEMORY — 001</span><span class="memory-symbol">☾</span>
+        <div><h3>Your kind of magic</h3><p>The way one little moment with you can turn an ordinary day into a good one.</p></div>
+      </article>
+      <article class="memory" id="memory2">
+        <span class="memory-number">MEMORY — 002</span><span class="memory-symbol">✧</span>
+        <div><h3>Your beautiful heart</h3><p>Not just how you look, but the person you are when nobody is watching.</p></div>
+      </article>
+      <article class="memory" id="memory3">
+        <span class="memory-number">MEMORY — 003</span><span class="memory-symbol">∞</span>
+        <div><h3>The little details</h3><p>The tiny things you might forget you did, but someone else remembers.</p></div>
+      </article>
+      <article class="memory" id="memory4">
+        <span class="memory-number">MEMORY — 004</span><span class="memory-symbol">♡</span>
+        <div><h3>Simply being you</h3><p>No perfect words, no grand gestures. Just you, exactly as you are.</p></div>
+      </article>
+    </div>
+    <div class="photo-tools reveal">
+      <label class="upload-label" for="photoUpload">＋ Add your photographs</label>
+      <input type="file" id="photoUpload" accept="image/*" multiple hidden>
+      <span class="photo-note">Choose photos from your device. They appear in this page only; this demo does not upload them.</span>
+    </div>
+    <div id="photoGallery" class="memory-wall" style="margin-top:22px"></div>
+  </div>
+</section>
+
+<!-- SECRET LEVELS -->
+<section class="section secret-section" id="secrets">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Restricted access · Heart edition</div>
+      <h2 class="display">Not everyone gets<br>to see <i class="gold">this side.</i></h2>
+      <p>Three locked rooms. Solve the little riddles to reveal the messages hidden inside.</p>
+    </div>
+    <div class="secret-layout">
+      <div class="secret-intro reveal">
+        <div class="big-lock">⌑</div>
+        <div class="eyebrow">The private archive</div>
+        <h3 class="display" style="font-size:clamp(36px,5vw,55px);margin:22px 0">For your eyes<br><i class="gold">only.</i></h3>
+        <p>These aren't tests of how well you know everything. They're little invitations to pause, smile, and discover something sweet.</p>
+        <div class="rule" style="max-width:150px;margin-top:32px"></div>
+        <p style="font-family:var(--serif);font-size:20px;color:var(--gold-pale)">Access is earned with a smile.</p>
+      </div>
+      <div class="level-list reveal">
+        <div class="level">
+          <div class="level-num">01</div>
+          <div><h3>The first secret</h3><p>A little riddle to open the first door.</p></div>
+          <div class="level-status" id="status1">Locked</div>
+          <div class="level-body">
+            <p>I can be felt but not held. I can grow without being seen. What am I?</p>
+            <input class="riddle-input" id="answer1" placeholder="Whisper your answer…" autocomplete="off" aria-label="Answer to first riddle">
+            <button class="btn small" onclick="solve(1)">Unlock room <span class="arrow">↗</span></button>
+            <div class="feedback" id="feedback1" aria-live="polite"></div>
+            <div class="level-reveal" id="reveal1">“Pyaar sirf kisi ko paane ka naam nahi hota, pyaar toh us insaan ko samajhne ka naam hota hai jise tumne khud se bhi zyada chaha ho. Sabse zyada dard tab hota hai jab wahi insaan tumhari aankhon mein aansu dekhkar bhi tumhara dard samajh nahi paata, jiske liye tumne apni har khushi ko side mein rakh diya ho.
+
+Mohabbat mein insaan tab nahi toot-ta jab koi use chhod deta hai, balki tab toot-ta hai jab woh insaan saath toh hota hai, par pehle jaisa apna nahi lagta… 💔
+
+Aur sach kahun, toh pyaar ki sabse khoobsurat aur dardnaak baat yahi hai—dil usi se shikayat karta hai, jiske bina rehne ka khayal bhi dil ko manzoor nahi hota.” 🥺❤️‍🩹</div>
+          </div>
+        </div>
+        <div class="level locked-level" id="level2">
+          <div class="level-num">02</div>
+          <div><h3>The hidden note</h3><p>The next room appears when the first is open.</p></div>
+          <div class="level-status" id="status2">Locked</div>
+          <div class="level-body">
+            <p>I travel from one heart to another, even when there are no words. What am I?</p>
+            <input class="riddle-input" id="answer2" placeholder="The next little answer…" autocomplete="off" aria-label="Answer to second riddle" disabled>
+            <button class="btn small" id="solve2" onclick="solve(2)" disabled>Reveal the note <span class="arrow">↗</span></button>
+            <div class="feedback" id="feedback2" aria-live="polite"></div>
+            <div class="level-reveal" id="reveal2">“Feeling woh ehsaas hai jo lafzon mein kabhi poora bayaan nahi ho sakta… jahan ek chhoti si baat dil ko khush kar deti hai aur ek chhoti si berukhi poori raat rula deti hai.
+
+Jab kisi se sach mein feeling ho jaati hai na, toh uska online aana bhi sukoon deta hai, uska ek message chehre par muskurahat la deta hai, aur uska badla hua lehja dil mein hazaar sawaal khade kar deta hai.
+
+Sabse zyada dard tab hota hai jab hum kisi ko apni har feeling samjhana chahte hain, lekin woh hamari khamoshi tak samajhna chhod deta hai… 💔
+
+Aur pata hai, asli feeling kya hoti hai? Kisi se naraz hokar bhi usi ke message ka intezaar karna, usse door hokar bhi usi ke kareeb rehna chahna, aur andar se tootkar bhi uske saamne theek hone ka dikhawa karna.
+
+“Kyunki jahan sirf attraction hota hai, wahan insaan badal jaata hai… lekin jahan sachchi feeling hoti hai, wahan insaan badalne se pehle sau baar sochta hai ki kahin uske badalne se kisi apne ka dil toh nahi toot jaayega.” 🥺❤️‍🩹</div>
+          </div>
+        </div>
+        <div class="level locked-level" id="level3">
+          <div class="level-num">03</div>
+          <div><h3>The final key</h3><p>One final little riddle before the finale.</p></div>
+          <div class="level-status" id="status3">Locked</div>
+          <div class="level-body">
+            <p>I need you to answer a question of mine—can you do that?</p>
+            <input class="riddle-input" id="answer3" placeholder="Find the final key…" autocomplete="off" aria-label="Answer to third riddle" disabled>
+            <button class="btn small" id="solve3" onclick="solve(3)" disabled>Claim the final key <span class="arrow">↗</span></button>
+            <div class="feedback" id="feedback3" aria-live="polite"></div>
+            <div class="level-reveal" id="reveal3">You need to answer a question for me—tell me what I can expect from you. Please keep your response to just two lines; can you do that? And if you’d like to provide an answer, please send it via message.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GIFTS -->
+<section class="section" id="gifts">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Chapter 03 · Open when ready</div>
+      <h2 class="display">Three gifts.<br><i class="gold">No wrapping needed.</i></h2>
+      <p>Tap each little gift. No timer, no rush — the best surprises are the ones you get to enjoy.</p>
+    </div>
+    <div class="gift-grid reveal">
+      <button class="gift" onclick="openGift(1,this)">
+        <span class="gift-icon">✉</span><small>Gift no. 01</small><h3>A tiny promise</h3><p>For the days when you need a little reassurance.</p>
+      </button>
+      <button class="gift" onclick="openGift(2,this)">
+        <span class="gift-icon">✧</span><small>Gift no. 02</small><h3>A wish for you</h3><p>For the dreams you're still growing into.</p>
+      </button>
+      <button class="gift" onclick="openGift(3,this)">
+        <span class="gift-icon">♕</span><small>Gift no. 03</small><h3>Your crown</h3><p>For the princess who deserves her own little moment.</p>
+      </button>
+    </div>
+    <div class="gift-result" id="giftResult" aria-live="polite">
+      <h3 id="giftTitle">A little something for you</h3>
+      <p id="giftMessage"></p>
+    </div>
+  </div>
+</section>
+
+<!-- LOVE LETTER -->
+<section class="section" id="letter">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Chapter 04 · No audience, just us</div>
+      <h2 class="display">A letter that<br><i class="gold">doesn't need a reply.</i></h2>
+    </div>
+    <article class="letter-wrap reveal">
+      <h3>To my Princess,</h3>
+      <p>On your birthday, I could give you a thousand beautiful things. Flowers that fade, gifts that get put away, words that disappear into a busy day.</p>
+      <p>Instead, I wanted to make you a little place you could return to. A reminder that you matter, that your happiness matters, and that the person you are is worth celebrating in all the ways that count.</p>
+      <p>I hope the year ahead brings you quiet peace on difficult days, unexpected laughter on ordinary ones, courage when you need it, and people who remind you how wonderful you are.</p>
+      <p>And when life gets a little loud, I hope you remember this: you don't have to earn every beautiful thing by being strong all the time. You deserve kindness simply because you are you.</p>
+      <p>Happy birthday, Princess. May this next chapter be kinder, brighter, and full of moments that make you smile when you remember them.</p>
+      <div class="letter-sign">Always wishing you the best, ♡</div>
+      <div class="edit-note">PERSONAL TOUCH · Edit this letter in the HTML to add your own name, shared memories, and words that only the two of you understand.</div>
+    </article>
+  </div>
+</section>
+
+<!-- COUNTDOWN -->
+<section class="countdown-section">
+  <div class="container countdown reveal">
+    <div class="eyebrow" style="justify-content:center">Mark the moment</div>
+    <h2 class="display">A little closer to <i class="gold">your day.</i></h2>
+    <p class="countdown-sub">10 NOVEMBER 2026 · A DAY MADE EXTRA SPECIAL</p>
+    <div class="clock" aria-label="Countdown to birthday">
+      <div class="clock-unit"><strong id="days">000</strong><span>Days</span></div>
+      <div class="clock-unit"><strong id="hours">00</strong><span>Hours</span></div>
+      <div class="clock-unit"><strong id="minutes">00</strong><span>Minutes</span></div>
+      <div class="clock-unit"><strong id="seconds">00</strong><span>Seconds</span></div>
+    </div>
+    <div class="countdown-foot" id="countdownMessage">Some days deserve a little extra sparkle.</div>
+  </div>
+</section>
+
+<!-- GRAND FINALE -->
+<section id="finale" class="finale hidden-finale">
+  <div class="finale-inner">
+    <div class="finale-overline">The final chapter · Made for you</div>
+    <h2 class="display">Happy Birthday <em>Princess In advance.</em></h2>
+    <p>May your life be filled with the kind of magic you give to the people around you.</p>
+    <div class="finale-date">10 · 11 · 2026</div>
+    <button class="btn" id="celebrateBtn">Make a little magic <span class="arrow">✧</span></button>
+    <p id="finalMessage" style="display:none;margin-top:35px;color:var(--gold-pale)">You are a beautiful chapter in this world. Keep shining in your own way. ♡</p>
+  </div>
+</section>
+<div id="finaleLock">
+  <div class="container">
+    <div class="rule" style="max-width:100px;margin:0 auto 30px"></div>
+    <p class="serif muted" style="font-size:21px">The last page is waiting for you.</p>
+    <button class="btn ghost" id="finalUnlock" disabled>Complete the secret levels first</button>
+    <p class="muted" style="font-size:11px;margin-top:12px">Unlock all three rooms to reveal the birthday finale.</p>
+  </div>
+</div>
+
+</main>
+
+<footer class="footer">
+  <span>My Princess · A little world of our own</span>
+  <span>Made with love, not a little magic. ♡</span>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const gate = $("gate");
+  let solved = new Set();
+  let openedGifts = new Set();
+  let soundOn = false;
+  let audioContext = null;
+  let noteTimer = null;
+
+  // Cinematic entrance
+  $("beginBtn").addEventListener("click", () => {
+    gate.classList.add("dismissed");
+    document.body.classList.remove("locked");
+    toast("Welcome to your little universe. ♡");
+    burst(window.innerWidth / 2, window.innerHeight / 2, 16);
+  });
+
+  // Progress and navigation styling
+  function updateProgress(){
+    const max = document.documentElement.scrollHeight - innerHeight;
+    $("progress").style.width = (max > 0 ? scrollY / max * 100 : 0) + "%";
+    $("topbar").classList.toggle("scrolled", scrollY > 40);
+  }
+  window.addEventListener("scroll", updateProgress, {passive:true});
+  window.addEventListener("resize", updateProgress);
+  updateProgress();
+
+  // Soft reveal-on-scroll motion
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add("visible");
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, {threshold:.12});
+  document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+
+  // Toast
+  let toastTimer;
+  function toast(message){
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+  }
+
+  // Countdown to local midnight at the start of November 10, 2026.
+  function updateCountdown(){
+    const target = new Date(2026, 10, 10, 0, 0, 0).getTime();
+    const now = Date.now();
+    let distance = target - now;
+    if(distance <= 0){
+      $("days").textContent = "000";
+      $("hours").textContent = "00";
+      $("minutes").textContent = "00";
+      $("seconds").textContent = "00";
+      $("countdownMessage").textContent =
+        new Date().getDate() === 10 && new Date().getMonth() === 10
+        ? "Today is your day. Let the magic begin. ♡"
+        : "Your special day has arrived. Keep the memories close. ♡";
+      return;
+    }
+    const day = Math.floor(distance / 86400000);
+    distance %= 86400000;
+    const hour = Math.floor(distance / 3600000);
+    distance %= 3600000;
+    const minute = Math.floor(distance / 60000);
+    const second = Math.floor(distance / 1000) % 60;
+    $("days").textContent = String(day).padStart(3,"0");
+    $("hours").textContent = String(hour).padStart(2,"0");
+    $("minutes").textContent = String(minute).padStart(2,"0");
+    $("seconds").textContent = String(second).padStart(2,"0");
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // Secret level system: answers are intentionally forgiving.
+  const acceptedAnswers = {
+   1:["love","pyaar","pyar","prem","mohabbat"],
+    2:["feeling","feelings","emotion","emotions","ehsaas","ehsas"],
+    3:["ok","yes","Haa","Hmm","oks","okes"]
+  };
+
+  window.solve = function(level){
+    if(level > 1 && !solved.has(level - 1)){
+      toast("One little door at a time. ♡");
+      return;
+    }
+    if(solved.has(level)){
+      toast("This secret is already yours. ✧");
+      return;
+    }
+    const input = $("answer" + level);
+    const answer = input.value.trim().toLowerCase().replace(/[.,!?]/g,"");
+    const feedback = $("feedback" + level);
+    if(!answer){
+      feedback.textContent = "A little guess is all you need.";
+      input.focus();
+      return;
+    }
+    if(!acceptedAnswers[level].includes(answer)){
+      feedback.textContent = "Not quite. Try another word, and trust your heart.";
+      input.classList.add("wrong");
+      setTimeout(() => input.classList.remove("wrong"), 450);
+      return;
+    }
+
+    solved.add(level);
+    $("reveal" + level).classList.add("show");
+    $("status" + level).textContent = "Unlocked";
+    feedback.textContent = "The door is open. This little secret belongs to you. ♡";
+    input.disabled = true;
+    const button = document.querySelector("#level" + level + " .level-body button") ||
+      input.parentElement.querySelector("button");
+    if(button) button.disabled = true;
+
+    if(level < 3){
+      const next = level + 1;
+      $("level" + next).classList.remove("locked-level");
+      $("answer" + next).disabled = false;
+      $("solve" + next).disabled = false;
+      toast("Secret " + level + " unlocked. The next door is waiting. ✧");
+    } else {
+      $("finalUnlock").disabled = false;
+      $("finalUnlock").textContent = "Reveal the grand finale  ↗";
+      toast("All three secrets are yours. The final chapter awaits. ♕");
+      burst(innerWidth / 2, innerHeight / 2, 28);
+    }
+  };
+
+  // Allow Enter to submit a riddle.
+  [1,2,3].forEach(level => {
+    $("answer" + level).addEventListener("keydown", event => {
+      if(event.key === "Enter") window.solve(level);
+    });
+  });
+
+  // Three gift messages
+  const gifts = {
+    1:{
+      title:"A tiny promise",
+      message:"I cannot promise that every day will be perfect. But I hope you always remember to give yourself the kindness you so freely give to others. You deserve patience, peace, laughter and love — even on the days when life feels a little difficult."
+    },
+    2:{
+      title:"A wish for your next chapter",
+      message:"May the dreams you are quietly carrying find their way into the world. May new doors open for you, may you discover things that make you feel alive, and may you never feel that you have to make yourself smaller to fit someone else's idea of who you should be."
+    },
+    3:{
+      title:"Your invisible crown ♕",
+      message:"Here is your reminder, Princess: your worth was never decided by a number, a comparison, a bad day or somebody else's opinion. Keep your kindness. Protect your peace. Take up space. And never forget that you deserve to be celebrated just as you are."
+    }
+  };
+
+  window.openGift = function(number, button){
+    openedGifts.add(number);
+    document.querySelectorAll(".gift").forEach(el => el.classList.remove("opened"));
+    button.classList.add("opened");
+    $("giftTitle").textContent = gifts[number].title;
+    $("giftMessage").textContent = gifts[number].message;
+    $("giftResult").classList.add("show");
+    $("giftResult").scrollIntoView({behavior:"smooth",block:"nearest"});
+    toast("A little gift, opened just for you. ♡");
+  };
+
+  // Photo selection: photos remain in this browser page and are not uploaded.
+  $("photoUpload").addEventListener("change", event => {
+    const files = Array.from(event.target.files || []);
+    const gallery = $("photoGallery");
+    files.filter(file => file.type.startsWith("image/")).slice(0,12).forEach(file => {
+      const url = URL.createObjectURL(file);
+      const tile = document.createElement("div");
+      tile.className = "memory";
+      tile.style.padding = "0";
+      tile.style.minHeight = "240px";
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = "A personal memory";
+      img.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.88";
+      const overlay = document.createElement("div");
+      overlay.style.cssText = "position:absolute;inset:0;background:linear-gradient(0deg,rgba(16,11,16,.85),transparent 60%);pointer-events:none";
+      const caption = document.createElement("div");
+      caption.textContent = "A memory worth keeping ♡";
+      caption.style.cssText = "position:absolute;bottom:20px;left:20px;font-family:Georgia,serif;font-size:22px";
+      tile.append(img, overlay, caption);
+      gallery.appendChild(tile);
+    });
+    if(files.length) toast("Your memories have found a place in the story. ♡");
+    if(files.length > 12) toast("Up to 12 photos can be added in one selection.");
+    event.target.value = "";
+  });
+
+  // Grand finale stays hidden until all secret rooms are opened.
+  $("finalUnlock").addEventListener("click", () => {
+    if(solved.size !== 3){
+      toast("There are still secrets waiting for you.");
+      return;
+    }
+    $("finale").classList.remove("hidden-finale");
+    $("finaleLock").style.display = "none";
+    $("finale").scrollIntoView({behavior:"smooth"});
+    burst(innerWidth / 2, innerHeight / 2, 38);
+  });
+
+  $("celebrateBtn").addEventListener("click", () => {
+    $("finalMessage").style.display = "block";
+    burst(innerWidth / 2, innerHeight * .65, 70);
+    toast("This moment is yours. Happy Birthday, Princess! ♡");
+  });
+
+  // Confetti-like star and heart particles, no external library.
+  function burst(x,y,count){
+    const symbols = ["✦","♡","✧","·","★"];
+    for(let i=0;i<count;i++){
+      const p = document.createElement("span");
+      p.className = "particle";
+      p.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+      p.style.left = (x + (Math.random()-.5)*240) + "px";
+      p.style.top = (y + (Math.random()-.5)*70) + "px";
+      p.style.color = Math.random() > .4 ? "#d6b77c" : "#d88a9f";
+      p.style.fontSize = (10 + Math.random()*17) + "px";
+      p.style.animationDuration = (1.8 + Math.random()*1.8) + "s";
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 4000);
+    }
+  }
+
+  // Optional ambient sound: generated locally after the user presses the sound button.
+  // No copyrighted song or external audio file is used.
+  function playAmbient(){
+    if(!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioContext.state === "suspended") audioContext.resume();
+    const notes = [261.63,329.63,392,493.88,392,329.63];
+    let index = 0;
+    function note(){
+      if(!soundOn || !audioContext) return;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = "sine";
+      osc.frequency.value = notes[index % notes.length];
+      gain.gain.setValueAtTime(.0001,audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.018,audioContext.currentTime+.08);
+      gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+1.4);
+      osc.connect(gain);gain.connect(audioContext.destination);
+      osc.start();osc.stop(audioContext.currentTime+1.45);
+      index++;
+      noteTimer = setTimeout(note,1050);
+    }
+    note();
+  }
+
+  $("soundBtn").addEventListener("click", () => {
+    soundOn = !soundOn;
+    $("soundBtn").textContent = soundOn ? "♫" : "♪";
+    $("soundBtn").style.color = soundOn ? "var(--gold)" : "var(--cream)";
+    if(soundOn){
+      try{playAmbient();toast("Soft ambient notes are on. ♫");}
+      catch(error){soundOn=false;toast("Sound isn't available in this browser.");}
+    }else{
+      clearTimeout(noteTimer);
+      if(audioContext){audioContext.close();audioContext=null;}
+      toast("Quiet mode is on. ♡");
+    }
+  });
+
+  // Soft welcome particles after the entrance animation.
+  document.addEventListener("keydown", event => {
+    if(event.key === "Escape" && soundOn){
+      soundOn = false;
+      clearTimeout(noteTimer);
+      if(audioContext){audioContext.close();audioContext=null;}
+      $("soundBtn").style.color = "var(--cream)";
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
